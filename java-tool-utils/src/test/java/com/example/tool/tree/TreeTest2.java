@@ -3,7 +3,7 @@ package com.example.tool.tree;
 
 import com.alibaba.fastjson.JSON;
 
-import java.util.List;
+import java.util.*;
 
 /**
  * 树形结构
@@ -14,15 +14,21 @@ import java.util.List;
 public class TreeTest2 {
 
     public static void main(String[] args) {
+        int[] nums = new int[]{1, 0, 1, 1};
 
-        List<MenuInfo> menuInfoList = TreeTest.menuInfoList;
+        System.out.println((1 + 1 <= 1));
+        System.out.println(containsNearbyDuplicate(nums, 1));
 
-        ListToTreeUtil<MenuInfo> menuList = new ListToTreeUtil<MenuInfo>();
+    }
 
-        List<MenuInfo> treeListObject = menuList.getTreeListObject(menuInfoList);
-
-        System.out.println("--");
-        System.out.println(JSON.toJSONString(treeListObject));
-
+    public static boolean containsNearbyDuplicate(int[] nums, int k) {
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < nums.length; i++) {
+            if (map.containsKey(nums[i]) && Math.abs(map.get(nums[i]) - i) <= k) {
+                return true;
+            }
+            map.put(nums[i], i);
+        }
+        return false;
     }
 }

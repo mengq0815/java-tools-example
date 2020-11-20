@@ -5,6 +5,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.example.tool.dingding.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -34,17 +36,16 @@ public class DingDingMessUtil {
         sendText(robotWebHook, null, false, text, args);
     }
 
-
     /**
      * 发送钉钉普通文本消息 =>  指定@人
      *
      * @param robotWebHook 钉钉机器人请求地址
      * @param text         钉钉消息内容
-     * @param phones       被 @ 人员的时候号
+     * @param mobiles      被 @ 用户手机号
      * @param args         占位符需要替换的参数
      */
-    public static void sendTextAtPhones(String robotWebHook, List<String> phones, String text, Object... args) {
-        sendText(robotWebHook, phones, false, text, args);
+    public static void sendTextAtMobiles(String robotWebHook, List<String> mobiles, String text, Object... args) {
+        sendText(robotWebHook, mobiles, false, text, args);
     }
 
     /**
@@ -56,6 +57,65 @@ public class DingDingMessUtil {
      */
     public static void sendTextAtAll(String robotWebHook, String text, Object... args) {
         sendText(robotWebHook, null, true, text, args);
+    }
+
+    /**
+     * 发送 > 多行消息
+     * 注：实际以MarketDOwn形式发生-便于美化格式
+     *
+     * @param robotWebHook 钉钉机器人请求地址
+     * @param lineText     每一行的内容集，每一个节点是一行
+     */
+    public static void sendLineText(String robotWebHook, String title, List<String> lineText) {
+        sendLineText(robotWebHook, title, lineText, null, false, false);
+    }
+
+    /**
+     * 发送 > 多行消息-并指定@的用户手机号集
+     * 注：实际以MarketDOwn形式发生-便于美化格式
+     *
+     * @param robotWebHook 钉钉机器人请求地址
+     * @param lineText     每一行的内容集，每一个节点是一行
+     * @param mobiles      被 @ 用户手机号
+     */
+    public static void sendLineTextAtMobiles(String robotWebHook, String title, List<String> lineText, List<String> mobiles) {
+        sendLineText(robotWebHook, title, lineText, mobiles, false, false);
+    }
+
+    /**
+     * 发送 > 多行消息-并@群内所有人
+     * 注：实际以MarketDOwn形式发生-便于美化格式
+     *
+     * @param robotWebHook 钉钉机器人请求地址
+     * @param title        消息标题
+     * @param lineText     消息每一行的内容集，每一个节点是一行
+     */
+    public static void sendLineTextAtAll(String robotWebHook, String title, List<String> lineText) {
+        sendLineText(robotWebHook, title, lineText, null, false, true);
+    }
+
+    /**
+     * 发送 > 多行消息（消息呈现无序列表样式）
+     * 注：实际以MarketDOwn形式发生-便于美化格式
+     *
+     * @param robotWebHook 钉钉机器人请求地址
+     * @param title        消息标题
+     * @param lineText     消息每一行的内容集，每一个节点是一行
+     */
+    public static void sendLineOrderText(String robotWebHook, String title, List<String> lineText) {
+        sendLineText(robotWebHook, title, lineText, null, true, false);
+    }
+
+    /**
+     * 发送 > 多行消息（消息呈现无序列表样式）-并@所有人
+     * 注：实际以MarketDOwn形式发生-便于美化格式
+     *
+     * @param robotWebHook 钉钉机器人请求地址
+     * @param title        消息标题
+     * @param lineText     消息每一行的内容集，每一个节点是一行
+     */
+    public static void sendLineOrderTextAtAll(String robotWebHook, String title, List<String> lineText) {
+        sendLineText(robotWebHook, title, lineText, null, true, true);
     }
 
     /**
@@ -85,6 +145,46 @@ public class DingDingMessUtil {
             LOGGER.error("钉钉普通消息-推送异常！消息内容={},异常信息={},tack={}", msgText, e.getMessage(), e);
         }
     }
+
+
+    /**
+     * 发送 > 普通多行消息
+     *
+     * @param robotWebHook 钉钉机器人请求地址
+     * @param lineText     每一行的内容集，每一个节点是一行
+     * @param needOrder    是否无序列表格式展示
+     * @param isAtAll      是否@所有人
+     */
+    public static void sendLineText(String robotWebHook, String title, List<String> lineText, List<String> atMobiles, boolean needOrder, boolean isAtAll) {
+        if (CollectionUtils.isEmpty(lineText)) {
+            return;
+        }
+
+        DingMarkdownMessage markdownMessage = new DingMarkdownMessage();
+
+        StringBuilder dingMess = new StringBuilder();
+        if (!StringUtils.isEmpty(title)) {
+            markdownMessage.setTitle(title);
+            dingMess.append(DingMarkdownMessage.getThreeHeaderText(title));
+        }
+        if (needOrder) {
+            dingMess.append(DingMarkdownMessage.getUnorderListText(lineText));
+        } else {
+            for (String text : lineText) {
+                dingMess.append(DingMarkdownMessage.getFourHeaderText(text)).append(DingMessageConstants.NEW_LINE);
+            }
+        }
+        //指定@人
+        if (!CollectionUtils.isEmpty(atMobiles)) {
+            //换行
+            atMobiles.forEach(mobile -> dingMess.append("@").append(mobile));
+        }
+        markdownMessage.setAtAll(isAtAll);
+        markdownMessage.setAtMobiles(atMobiles);
+        markdownMessage.setMarkdownText(dingMess.toString());
+        DingDingMessUtil.sendMarkdown(robotWebHook, markdownMessage);
+    }
+
 
     /**
      * 公共发送-钉钉Link消息方法

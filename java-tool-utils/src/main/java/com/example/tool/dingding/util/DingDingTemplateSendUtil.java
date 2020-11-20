@@ -1,5 +1,6 @@
 package com.example.tool.dingding.util;
 
+import com.example.tool.dingding.DingMessageConstants;
 import com.example.tool.string.StringPool;
 
 /**
@@ -11,20 +12,6 @@ import com.example.tool.string.StringPool;
 public class DingDingTemplateSendUtil {
 
     /**
-     * 笑脸表情
-     */
-    public static final String SMILEY_FACE = "\uD83D\uDE01";
-    /**
-     * 哭脸表情
-     */
-    private static final String CRY_FACE = "\uD83D\uDE2D";
-
-    /**
-     * 着火表情
-     */
-    private static final String ON_FIRE = "\uD83D\uDD25";
-
-    /**
      * 发送 > 普通同步任务消息
      *
      * @author mengqiang
@@ -34,7 +21,7 @@ public class DingDingTemplateSendUtil {
         dingMess
                 .append("任务名称 : ").append(taskName)
                 .append(StringPool.NEWLINE)
-                .append("执行状态 : ").append(SMILEY_FACE)
+                .append("执行状态 : ").append(DingMessageConstants.SMILEY_FACE)
                 .append("成功")
                 .append(StringPool.NEWLINE)
                 .append("日志标识 : ").append(requestId)
@@ -52,11 +39,11 @@ public class DingDingTemplateSendUtil {
     public static void sendExceptionMess(String robotWebHook, String requestId, String taskName, String exceptionMsg) {
         StringBuilder dingMess = new StringBuilder();
         dingMess
-                .append("异常警告 : ").append(ON_FIRE).append(ON_FIRE).append(ON_FIRE)
+                .append("异常警告 : ").append(DingMessageConstants.ON_FIRE).append(DingMessageConstants.ON_FIRE).append(DingMessageConstants.ON_FIRE)
                 .append(StringPool.NEWLINE)
                 .append("任务名称 : ").append(taskName)
                 .append(StringPool.NEWLINE)
-                .append("执行状态 : ").append(CRY_FACE).append("异常")
+                .append("执行状态 : ").append(DingMessageConstants.CRY_FACE).append("异常")
                 .append(StringPool.NEWLINE)
                 .append("日志标识 : ").append(requestId)
                 .append(StringPool.NEWLINE)

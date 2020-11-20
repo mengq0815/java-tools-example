@@ -42,6 +42,13 @@ public class DingMarkdownMessage implements DingMessage {
     }
 
     /**
+     * 3级 标题
+     */
+    public static String getThreeHeaderText(String text) {
+        return getHeaderText(3, text);
+    }
+
+    /**
      * 4级 标题
      */
     public static String getFourHeaderText(String text) {
@@ -108,9 +115,9 @@ public class DingMarkdownMessage implements DingMessage {
 
         StringBuffer sb = new StringBuffer();
         for (int i = 1; i <= orderItem.size() - 1; i++) {
-            sb.append(String.valueOf(i) + ". " + orderItem.get(i - 1) + "\n");
+            sb.append(String.valueOf(i)).append(". ").append(orderItem.get(i - 1)).append("\n");
         }
-        sb.append(String.valueOf(orderItem.size()) + ". " + orderItem.get(orderItem.size() - 1));
+        sb.append(String.valueOf(orderItem.size())).append(". ").append(orderItem.get(orderItem.size() - 1));
         return sb.toString();
     }
 
@@ -123,9 +130,9 @@ public class DingMarkdownMessage implements DingMessage {
         }
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < unorderItem.size() - 1; i++) {
-            sb.append("- " + unorderItem.get(i) + "\n");
+            sb.append("- ").append(unorderItem.get(i)).append("\n");
         }
-        sb.append("- " + unorderItem.get(unorderItem.size() - 1));
+        sb.append("- ").append(unorderItem.get(unorderItem.size() - 1));
         return sb.toString();
     }
 
